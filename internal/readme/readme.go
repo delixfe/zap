@@ -44,6 +44,7 @@ var (
 		"inconshreveable/log15": "log15",
 		"apex/log":              "apex/log",
 		"rs/zerolog":            "zerolog",
+		"mattermost/logr/v2":    "mattermost/logr",
 	}
 )
 

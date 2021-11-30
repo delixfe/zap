@@ -86,6 +86,15 @@ func BenchmarkDisabledWithoutFields(b *testing.B) {
 			}
 		})
 	})
+	b.Run("mattermost/logr/v2", func(b *testing.B) {
+		logger := newDisabledMattermostLogrLogger()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(getMessage(0))
+			}
+		})
+	})
 	b.Run("rs/zerolog", func(b *testing.B) {
 		logger := newDisabledZerolog()
 		b.ResetTimer()
@@ -155,6 +164,15 @@ func BenchmarkDisabledAccumulatedContext(b *testing.B) {
 			}
 		})
 	})
+	b.Run("mattermost/logr/v2", func(b *testing.B) {
+		logger := newDisabledMattermostLogrLogger().With(fakeMattermostLogrFields()...)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(getMessage(0))
+			}
+		})
+	})
 	b.Run("rs/zerolog", func(b *testing.B) {
 		logger := fakeZerologContext(newDisabledZerolog().With()).Logger()
 		b.ResetTimer()
@@ -212,6 +230,15 @@ func BenchmarkDisabledAddingFields(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				logger.WithFields(fakeLogrusFields()).Info(getMessage(0))
+			}
+		})
+	})
+	b.Run("mattermost/logr/v2", func(b *testing.B) {
+		logger := newDisabledMattermostLogrLogger()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.With(fakeMattermostLogrFields()...).Info(getMessage(0))
 			}
 		})
 	})
@@ -308,6 +335,15 @@ func BenchmarkWithoutFields(b *testing.B) {
 	})
 	b.Run("sirupsen/logrus", func(b *testing.B) {
 		logger := newLogrus()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(getMessage(0))
+			}
+		})
+	})
+	b.Run("mattermost/logr/v2", func(b *testing.B) {
+		logger := newMattermostLogrLogger()
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
@@ -453,6 +489,15 @@ func BenchmarkAccumulatedContext(b *testing.B) {
 			}
 		})
 	})
+	b.Run("mattermost/logr/v2", func(b *testing.B) {
+		logger := newMattermostLogrLogger().With(fakeMattermostLogrFields()...)
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.Info(getMessage(0))
+			}
+		})
+	})
 	b.Run("rs/zerolog", func(b *testing.B) {
 		logger := fakeZerologContext(newZerolog().With()).Logger()
 		b.ResetTimer()
@@ -561,6 +606,15 @@ func BenchmarkAddingFields(b *testing.B) {
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				logger.WithFields(fakeLogrusFields()).Info(getMessage(0))
+			}
+		})
+	})
+	b.Run("mattermost/logr/v2", func(b *testing.B) {
+		logger := newMattermostLogrLogger()
+		b.ResetTimer()
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				logger.With(fakeMattermostLogrFields()...).Info(getMessage(0))
 			}
 		})
 	})
