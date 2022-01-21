@@ -491,12 +491,14 @@ func BenchmarkAccumulatedContext(b *testing.B) {
 	})
 	b.Run("mattermost/logr/v2", func(b *testing.B) {
 		logger := newMattermostLogrLogger().With(fakeMattermostLogrFields()...)
+		defer logger.Logr().Shutdown()
 		b.ResetTimer()
 		b.RunParallel(func(pb *testing.PB) {
 			for pb.Next() {
 				logger.Info(getMessage(0))
 			}
 		})
+		b.StopTimer()
 	})
 	b.Run("rs/zerolog", func(b *testing.B) {
 		logger := fakeZerologContext(newZerolog().With()).Logger()

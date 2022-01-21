@@ -22,6 +22,7 @@ package benchmarks
 
 import (
 	"io/ioutil"
+	"time"
 
 	"github.com/mattermost/logr/v2"
 	"github.com/mattermost/logr/v2/formatters"
@@ -39,10 +40,23 @@ func newMattermostLogrLogger() *logr.Logger {
 }
 
 func newMattermostLogrLoggerWithFilter(filter *logr.StdFilter) *logr.Logger {
-	lgr, _ := logr.New()
+	// drop records that do not fit in the queues
+	onTargetQueueFullFn := func(target logr.Target, rec *logr.LogRec, maxQueueSize int) bool {
+		return true
+	}
+	onQueueFullFn := func(rec *logr.LogRec, maxQueueSize int) bool {
+		return true
+	}
+	lgr, _ := logr.New(
+		logr.OnTargetQueueFull(onTargetQueueFullFn),
+		logr.OnQueueFull(onQueueFullFn),
+		logr.ShutdownTimeout(time.Second),
+	)
 	formatter := &formatters.JSON{}
 	target := targets.NewWriterTarget(ioutil.Discard)
-	_ = lgr.AddTarget(target, "writer", filter, formatter, 1000)
+	if err := lgr.AddTarget(target, "writer", filter, formatter, 1000); err != nil {
+		panic(err)
+	}
 	logger := lgr.NewLogger()
 	return &logger
 }
